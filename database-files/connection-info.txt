@@ -1,0 +1,5 @@
+Host Name: pandemicdb.cehiwrdshmps.us-east-1.rds.amazonaws.com
+Port: 5432
+User Name: postgres
+Database name: pandemic
+password: pandemic1234
