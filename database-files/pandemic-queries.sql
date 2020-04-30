@@ -1,6 +1,6 @@
 
 #Select the total beds and beds per 1000 people from a specific state
-#Replace Wymoning with desired state
+#Replace Wyoming with desired state
 SELECT total_beds, beds_per_1k, b.state_name 
 FROM "HOSPITAL_BEDS" as a
 	INNER JOIN "STATE_OR_PROVINCE" as b on a.state_id = b.state_id
