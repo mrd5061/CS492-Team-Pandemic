@@ -1,8 +1,13 @@
 #The following queries pull data from the test database schema.
+# For all following examples, replace "Wyoming" in the WHERE claues with desired state name
 
+#Select the reported cases from a specific state
+SELECT a."NUM_CASES",  b."STATE_NAME" 
+FROM test."REPORTED_CASES" as a
+	INNER JOIN test."STATE_OR_PROVINCE" as b on a."STATE_ID" = b."STATE_ID"
+WHERE "STATE_NAME" = 'Wyoming';
 
 #Select the total beds and beds per 1000 people from a specific state
-#Replace Wyoming with desired state
 SELECT a."TOTAL_BEDS", a."BEDS_PER_1K", b."STATE_NAME" 
 FROM test."HOSPITAL_BEDS" as a
 	INNER JOIN test."STATE_OR_PROVINCE" as b on a."STATE_ID" = b."STATE_ID"
@@ -34,6 +39,11 @@ WHERE "STATE_NAME" = 'Wyoming';
 
 #Returns the Latitude and Longitude of a specified state name
 SELECT "LATITUDE", "LONGITUDE"
+FROM test."STATE_OR_PROVINCE"	
+WHERE "STATE_NAME" = 'Wyoming';
+
+#Returns the Latitude and Longitude of a specified state name
+SELECT "POPULATION"
 FROM test."STATE_OR_PROVINCE"	
 WHERE "STATE_NAME" = 'Wyoming';
 
