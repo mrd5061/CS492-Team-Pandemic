@@ -55,15 +55,19 @@ import matplotlib.pyplot as plt
 # 	#function here
 # 	print("RECOVERED FUNCTION")
 
+def argnear(vec, val):
+    return (np.abs(vec - val)).argmin()
 
 
 
 
 
 
-def infect(Istart=0.01, Sstart=0.99, Rstart=0, transm=3.2, recov=0.23, maxT=1, nsteps=10):
+def infect(Istart=0.000001, Sstart=0.999999, Rstart=0, transm=3.2, recov=0.23, maxT=1, nsteps=10):
 	#tvals = np.linspace(0, maxT, nsteps)
-	tstep = float(maxT) / float(nsteps)
+	#tstep = float(maxT) / float(nsteps)
+	tstep = 1.0 / float(nsteps)
+	niters = int(maxT*nsteps)
 	Rcurr = Rstart
 	Scurr = Sstart
 	Icurr = Istart
@@ -74,7 +78,7 @@ def infect(Istart=0.01, Sstart=0.99, Rstart=0, transm=3.2, recov=0.23, maxT=1, n
 	#tsirs = [(0.0, Sstart, Istart, Rstart)]
 	#for t in tvals:
 	tcurr = 0.0
-	for step in range(nsteps):
+	for step in range(niters):
 		deltaS = -transm * Scurr * Icurr * tstep
 		deltaR = recov * Icurr * tstep
 		deltaI = tstep * (transm * Scurr * Icurr - recov * Icurr)
@@ -89,8 +93,8 @@ def infect(Istart=0.01, Sstart=0.99, Rstart=0, transm=3.2, recov=0.23, maxT=1, n
 		tvals.append(tcurr)
 		#tsirs.append((tcurr, Scurr, Icurr, Rcurr))
 
-		print("At time %.3f, have S=%.3f, I=%.3f, R=%.3f | total=%.3f" % (tcurr, Scurr, Icurr, Rcurr, total))
-	return tvals, Svals, Ivals, Rvals
+		#print("At time %.3f, have S=%.3f, I=%.3f, R=%.3f | total=%.3f" % (tcurr, Scurr, Icurr, Rcurr, total))
+	return np.array(tvals), np.array(Svals), np.array(Ivals), np.array(Rvals)
 	#return np.array(tsirs)
 	#return tvals, np.array(Svals), np.array(Ivals), np.array(Rvals)
 
@@ -112,6 +116,7 @@ if __name__ == '__main__':
 	plt.plot(TT, SS, label='SS')
 	plt.plot(TT, II, label='II')
 	plt.plot(TT, RR, label='RR')
+	plt.plot(TT, 1-np.array(SS), label='CC') #cumulative confirmed cases
 	plt.legend(loc='upper right')
 	plt.show()  # interactive
 	#plt.savefig('SIR.png')
