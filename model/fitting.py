@@ -25,6 +25,8 @@ import sys
 import time
 import numpy as np
 import datetime as dt
+import scipy.optimize as opti
+from functools import partial
 import matplotlib.pyplot as plt
 import pandas as pd
 import model
@@ -129,23 +131,88 @@ population = florida_pop
 #T_scale = 74.
 
 
-nyc_days = 42.
-nyc_cinf = 0.05
-TT, SS, II, RR = model.infect(maxT=5, nsteps=100000) #, transm=5)
+##--------------------------------------------------------------------------##
+
+def infectify(params, maxT=3, nsteps=10000, Tscale=9.):
+    #T_start, Istart, transm = params
+    T_start, transm = params
+    TT, SS, II, RR = model.infect(maxT=maxT, transm=transm, nsteps=nsteps) #, Istart=Istart) #, transm=5)
+    fTT = Tscale*TT + T_start
+    return fTT, SS, II, RR
+
+
+##--------------------------------------------------------------------------##
+
+# Select points to fit. We will ignore days where the confirmed cases equal 0
+which = (total_per_date.values > 0) & (days_elapsed>70)
+
+keep_times = days_elapsed[which]
+keep_cases = total_per_date.values[which]
+
+# fitted parameters:
+# [T_start, transm]
+
+#def trial_infection(params, times_data, cases_data, T_scale=9):
+def trial_infection(params, times_data, cases_data):
+    fTT, SS, II, RR = infectify(params)
+    all_confirmed = population * (1.0-SS)
+    #fTT = TT + T_start
+
+    cyvals = np.interp(times_data, fTT, all_confirmed)
+
+    residuals = cases_data - cyvals
+    #residuals = np.log(cases_data) - np.log(cyvals)
+    return np.sum(residuals**2)
+
+#crapper = partial(trial_infection, times_data=keep_times, cases_data=keep_cases)
+
+pguess = np.array([40, 0.001, 3])
+pguess = np.array([40, 3])
+dargs = (keep_times, keep_cases)
+awesome = opti.fmin(trial_infection, pguess, dargs, maxiter=10)
+#pTT = T_scale*TT + awesome[0]
+print("best-fit parameters: %s" % str(awesome))
+#nyc_days = 42.
+#nyc_cinf = 0.05
+#TT, SS, II, RR = model.infect(maxT=5, nsteps=100000) #, transm=5)
+pTT, SS, II, RR = infectify(awesome)
 all_confirmed = 1.0-SS
 pSS = SS*population
 pII = II*population
 pRR = RR*population
 all_confirmed *= population
 
-which = argnear(1.-SS, nyc_cinf)
-sirtime = TT[argnear(1.-SS, nyc_cinf)]
-T_scale = nyc_days / sirtime
-T_scale *= 0.8
-T_start += 2
-pTT = T_scale*TT + T_start
+#which = argnear(1.-SS, nyc_cinf)
+#sirtime = TT[argnear(1.-SS, nyc_cinf)]
+#T_scale = nyc_days / sirtime
+#T_scale *= 9
+#T_start += 2
+#pTT = T_scale*TT + T_start
 
-print("Using T_start=%.2f and T_scale=%.3f." % (T_start, T_scale))
+#print("Using T_start=%.2f and T_scale=%.3f." % (T_start, T_scale))
+
+##--------------------------------------------------------------------------##
+
+which = (days_elapsed>70) #returns boolean array for which dates meet this criteria
+
+x = days_elapsed[which]
+
+y = np.log10(total_per_date.values[which]) # for use if plotting on a logarithmic graph
+y = total_per_date.values[which]
+
+
+def line(x, a, b):
+    return a * x + b
+
+popt, pcov = opti.curve_fit(line, x, y)
+
+pY = 10**line(x, popt[0], popt[1]) # for use if plotting on a logarithmic graph
+pY = line(x, popt[0], popt[1])
+
+#ax1.plot(x, pY)
+
+
+
 
 ##--------------------------------------------------------------------------##
 #plt.style.use('bmh')   # Bayesian Methods for Hackers style
@@ -171,6 +238,8 @@ ax1.plot(pTT, pSS, label='SS')
 ax1.plot(pTT, pII, label='II')
 ax1.plot(pTT, pRR, label='RR')
 ax1.plot(pTT, all_confirmed, label='CC') #cumulative confirmed cases
+ax1.plot(x, pY, c="salmon", ls="--")
+
 
 ax1.set_yscale('log')
 ax1.set_ylim(ymin=0.5)
@@ -181,8 +250,8 @@ ax1.set_ylim(ymin=0.5)
 #ax1.plot(kde_pnts, kde_vals)
 #ax1.scatter(timestamp.jd, country_dead)
 #ax1.scatter(fitme_jdutc, fitme_ndead)
-ax1.scatter(days_elapsed, total_per_date, lw=0, s=15)
-
+ax1.scatter(days_elapsed, total_per_date, lw=0, s=15, label="data")
+ax1.legend()
 #ax1.plot(fitted_tstamp, fitted_deaths, c='r')
 
 #blurb = "some text"

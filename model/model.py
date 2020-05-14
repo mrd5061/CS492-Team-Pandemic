@@ -63,9 +63,10 @@ def argnear(vec, val):
 
 
 
-def infect(Istart=0.000001, Sstart=0.999999, Rstart=0, transm=3.2, recov=0.23, maxT=1, nsteps=10):
+def infect(Istart=0.000001, Rstart=0, transm=3.2, recov=0.23, maxT=1, nsteps=10):
 	#tvals = np.linspace(0, maxT, nsteps)
 	#tstep = float(maxT) / float(nsteps)
+	Sstart = 1. - Rstart - Istart
 	tstep = 1.0 / float(nsteps)
 	niters = int(maxT*nsteps)
 	Rcurr = Rstart
