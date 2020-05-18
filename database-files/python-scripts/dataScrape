@@ -3,5 +3,6 @@
 python cron_confirmed_scrape.py &
 python cron_deaths_scrape.py &
 python cron_a_r_scrape.py &
+wait
 python updateTestDb.py&
 
