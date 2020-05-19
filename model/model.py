@@ -5,6 +5,8 @@
 # Modified: 05/01/2020
 # model.py
 
+# To use virtual environment, In Terminal use: source ~/venv/pandemic_model/bin/activate
+
 # This program represents a SEIR model which represents infections as they spread through a population.
 # For reference, see: https://www.idmod.org/docs/hiv/model-seir.html#seir-model
 # In a SEIR model, individuals move through each compartment (Susceptible, Exposed, Infectious, Recovered). 
@@ -35,33 +37,16 @@ import matplotlib.pyplot as plt
 
 
 
-
-# def calculate_delta_susceptible():
-# 	#function here
-# 	print("SUSCEPTIBLE FUNCTION")
-
-
-# def calculate_delta_exposed():
-# 	#function here
-# 	print("EXPOSED FUNCTION")
-
-
-# def calculate_delta_infected():
-# 	#function here
-# 	print("INFECTED FUNCTION")
-
-
-# def calculate_delta_recovered():
-# 	#function here
-# 	print("RECOVERED FUNCTION")
-
 def argnear(vec, val):
     return (np.abs(vec - val)).argmin()
 
 
 
 
-
+##--------------------------------------------------------------------------##
+##	Infect will compute the SIR model, and does not yet take into account 
+##	any given timescale. The fitting.py script will take into account days
+##--------------------------------------------------------------------------## 
 
 def infect(Istart=0.000001, Rstart=0, transm=3.2, recov=0.23, maxT=1, nsteps=10):
 	#tvals = np.linspace(0, maxT, nsteps)

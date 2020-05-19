@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 # vim: set fileencoding=utf-8 ts=4 sts=4 sw=4 et tw=80 :
+# To use virtual environment, In Terminal use: source ~/venv/pandemic_model/bin/activate
 #
 # Amanda Lawrence
 # Created: 05/08/2020
 # Modified: 05/08/2020
 #
 # Imports and fits data to our model
-#
+#   
 
 # Python version-agnostic module reloading:
 try:
@@ -128,31 +129,46 @@ florida_pop = 21477737
 #population = louisiana_pop
 population = florida_pop
 
+#Time scale
 #T_scale = 74.
 
 
+##--------------------------------------------------------------------------##
+##
+##  infectify() will compute our model and return the outputs:
+##      fTT = time in days, from 01/22/2020
+##      SS = fraction of population that is susceptible
+##      II = fraction of population that is infected
+##      RR = fraction of population that has recovered
+##      On any given day, SS+II+RR should equal 1, and each of the values of
+##      SS, II, RR must each be >= 0 and <= 1. 
+##
 ##--------------------------------------------------------------------------##
 
 def infectify(params, maxT=3, nsteps=10000, Tscale=9.):
     #T_start, Istart, transm = params
     T_start, transm = params
     TT, SS, II, RR = model.infect(maxT=maxT, transm=transm, nsteps=nsteps) #, Istart=Istart) #, transm=5)
-    fTT = Tscale*TT + T_start
+    fTT = Tscale*TT + T_start # T_start=number of days since 01/22/2020
     return fTT, SS, II, RR
 
 
 ##--------------------------------------------------------------------------##
 
-# Select points to fit. We will ignore days where the confirmed cases equal 0
+# Select which points to fit. We will ignore days where the confirmed cases equal 0
 which = (total_per_date.values > 0) & (days_elapsed>70)
 
+# The times and case counts we are attempting to fit the model to. 
 keep_times = days_elapsed[which]
 keep_cases = total_per_date.values[which]
 
 # fitted parameters:
 # [T_start, transm]
 
-#def trial_infection(params, times_data, cases_data, T_scale=9):
+##--------------------------------------------------------------------------##
+#   The merit function. This function returns the sum of the squares of the 
+##  residuals. Describes the goodness or badness of what we're evaluating.
+##--------------------------------------------------------------------------##
 def trial_infection(params, times_data, cases_data):
     fTT, SS, II, RR = infectify(params)
     all_confirmed = population * (1.0-SS)
@@ -166,10 +182,17 @@ def trial_infection(params, times_data, cases_data):
 
 #crapper = partial(trial_infection, times_data=keep_times, cases_data=keep_cases)
 
+# pguess is the parameter guess, makes an initial guess
 pguess = np.array([40, 0.001, 3])
 pguess = np.array([40, 3])
 dargs = (keep_times, keep_cases)
+
+
+
+# awesome holds the resulting of our fitting, which is computed using trial_infection(), parameter guess, times and case counts we're attempting to fit model to.
 awesome = opti.fmin(trial_infection, pguess, dargs, maxiter=10)
+
+
 #pTT = T_scale*TT + awesome[0]
 print("best-fit parameters: %s" % str(awesome))
 #nyc_days = 42.
@@ -180,7 +203,7 @@ all_confirmed = 1.0-SS
 pSS = SS*population
 pII = II*population
 pRR = RR*population
-all_confirmed *= population
+all_confirmed *= population # the current state's population, times the fraction of that state's confirmed_cases
 
 #which = argnear(1.-SS, nyc_cinf)
 #sirtime = TT[argnear(1.-SS, nyc_cinf)]
@@ -192,14 +215,18 @@ all_confirmed *= population
 #print("Using T_start=%.2f and T_scale=%.3f." % (T_start, T_scale))
 
 ##--------------------------------------------------------------------------##
+##  Fits a line to the last several days, since day 70, in order to extrapolate 
+##  and draw a line of the next several days of confirmed cases
+##--------------------------------------------------------------------------##
 
-which = (days_elapsed>70) #returns boolean array for which dates meet this criteria
+lookback_days = 14. # The number of days back, from the end of the dataset, to use in evaluating our projection 
+which = (days_elapsed>days_elapsed.max()-lookback_days) #returns boolean array for which dates meet this criteria
 
 x = days_elapsed[which]
 
 y = np.log10(total_per_date.values[which]) # for use if plotting on a logarithmic graph
-y = total_per_date.values[which]
-
+#y = total_per_date.values[which]
+forecast_days = 7  #The number of days beyond dataset that we would like our projection to forecast
 
 def line(x, a, b):
     return a * x + b
@@ -210,11 +237,39 @@ pY = 10**line(x, popt[0], popt[1]) # for use if plotting on a logarithmic graph
 pY = line(x, popt[0], popt[1])
 
 #ax1.plot(x, pY)
-
-
-
+pX = np.linspace(x.min(),x.max()+forecast_days)
+pY = 10**line(pX, popt[0], popt[1])
 
 ##--------------------------------------------------------------------------##
+##  Additional projections, dependent on a change in the transmission rate 
+##  indicating that stay-at-home measures may either become stricter or more lenient.
+##  The user will be able to choose from multiple options, on what a projection
+##  would look like, for any given state, and the transmission rate will either 
+##  increase or decrease.  
+##
+##  By default, the model is using transm = 3.2. 4, 3.5, 3.2, 3, 2.5
+##--------------------------------------------------------------------------##
+
+projection_RR = total_per_date.values[-14]
+projection_II = total_per_date.values[-1]-projection_RR
+I_start = projection_II/population
+R_start = projection_RR/population
+
+
+def make_projections(I_start, R_start, projected_transm):
+    return model.infect(I_start, R_start, projected_transm, nsteps=1000)
+
+
+projected_TT, projected_SS, projected_II, projected_RR = make_projections(I_start, R_start, 0.5) #returns arrays of time, Susceptible, Infected, and Recovered 
+projected_TT = 9.*projected_TT + days_elapsed.max()
+projected_CC = 1.0 - projected_SS
+projected_CC *= population #projected confirmed cases
+
+##--------------------------------------------------------------------------##
+## Plotting out the results of our fitting
+##--------------------------------------------------------------------------##
+
+
 #plt.style.use('bmh')   # Bayesian Methods for Hackers style
 fig_dims = (7, 6)
 fig = plt.figure(1, figsize=fig_dims)
@@ -238,8 +293,15 @@ ax1.plot(pTT, pSS, label='SS')
 ax1.plot(pTT, pII, label='II')
 ax1.plot(pTT, pRR, label='RR')
 ax1.plot(pTT, all_confirmed, label='CC') #cumulative confirmed cases
-ax1.plot(x, pY, c="salmon", ls="--")
+ax1.plot(pX, pY, c="salmon", ls="--")
+#ax1.plot(projected_TT, projected_CC, label='R=4.0 projection')
 
+for r in [4, 3, 2, 1, 0.5]:
+    projected_TT, projected_SS, projected_II, projected_RR = make_projections(I_start, R_start, r) #returns arrays of time, Susceptible, Infected, and Recovered 
+    projected_TT = 9.*projected_TT + days_elapsed.max()
+    projected_CC = 1.0 - projected_SS
+    projected_CC *= population #projected confirmed cases
+    ax1.plot(projected_TT, projected_CC, label='R=%.1f projection' % r)
 
 ax1.set_yscale('log')
 ax1.set_ylim(ymin=0.5)
@@ -252,6 +314,8 @@ ax1.set_ylim(ymin=0.5)
 #ax1.scatter(fitme_jdutc, fitme_ndead)
 ax1.scatter(days_elapsed, total_per_date, lw=0, s=15, label="data")
 ax1.legend()
+ax1.set_xlabel("days since January 22, 2020")
+ax1.set_ylabel("cumulative confirmed infections")
 #ax1.plot(fitted_tstamp, fitted_deaths, c='r')
 
 #blurb = "some text"
