@@ -1,0 +1,1 @@
+- To connect to my remote server, on AWS, using SSH in Terminal:cd CS492-Team-Pandemic/modelssh bitnami@52.34.182.219 -i LightsailDefaultKey-us-west-2.pem- To start virtual environment:source ~/venv/pandemic/bin/activate- To deactivate the virtual environment:deactivate
