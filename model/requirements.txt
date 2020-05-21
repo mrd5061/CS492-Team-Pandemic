@@ -4,3 +4,5 @@ matplotlib
 pandas
 ipython
 astropy
+psycopg2-binary
+sqlalchemy

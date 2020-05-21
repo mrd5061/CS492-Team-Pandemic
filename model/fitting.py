@@ -30,6 +30,8 @@ import scipy.optimize as opti
 from functools import partial
 import matplotlib.pyplot as plt
 import pandas as pd
+import sqlalchemy
+from sqlalchemy import Column, create_engine, select, MetaData,Table,text
 import model
 reload(model)
 #import statsmodels.api as sm
@@ -48,40 +50,56 @@ def argnear(vec, val):
     return (np.abs(vec - val)).argmin()
 
 
+
+
+##--------------------------------------------------------------------------##
+##  The setup for pulling data directly from the raw data csv files from 
+##  John Hopkins.
+##--------------------------------------------------------------------------##
 # Load data:
 base_csv_dir = '../datasets/'
 cumu_csv_dir = os.path.join(base_csv_dir, 'csse_covid_19_daily_reports')
 time_csv_dir = os.path.join(base_csv_dir, 'csse_covid_19_time_series')
 #prefix = 'time_series_19-covid'
 #csv_files = sorted(glob.glob('%s/*.csv' % time_csv_dir))
+
 data = {}
 #csv_names = ['Confirmed', 'Deaths', 'Recovered']
 csv_names = ['confirmed', 'deaths', 'recovered']
-# for cname in csv_names:
-#     #cbase = 'time_series_19-covid-%s.csv' % cname
-#     #cbase = 'time_series_covid19_%s.csv' % cname
-#     cbase = 'time_series_covid19_%s_global.csv' % cname
-#     cpath = os.path.join(time_csv_dir, cbase)
-#     #tag = cname.lower()
-#     #cbase = os.path.basename(cfile)
-#     #sys.stderr.write("cbase: %s\n" % cbase)
-#     sys.stderr.write("cpath: %s\n" % cpath)
-#     data[cname] = pd.read_csv(cpath)
-
-
 data['confirmed'] = pd.read_csv("../datasets/time_series_covid19_confirmed_US_04_20_2020.csv")
 data['deaths'] = pd.read_csv("../datasets/time_series_covid19_deaths_US_04_20_2020.csv")
-
-
 case = data['confirmed']
-
 number_cols = slice(11, None, None)
 date_strings = case.keys()[number_cols]
 
+##--------------------------------------------------------------------------##
+##  The setup for a database connection to our PostgreSQL database, from pulling 
+##  data from PostgreSQL in lieu of the John Hopkins csv files.
+##--------------------------------------------------------------------------##
+
+engine = sqlalchemy.create_engine("postgres://postgres:pandemic1234@pandemicdb.cehiwrdshmps.us-east-1.rds.amazonaws.com/pandemicdb")
+
+db_conn = engine.connect()
+
+#dict of states to iterate through. the key represents the STATE_OR_PROVINCE.STATE_ID for each state 
+state ={60:'Alabama', 61: 'Alaska', 62: 'Arizona', 63: 'Arkansas', 64: 'California', 65: 'Colorado', 66: 'Connecticut', 67: 'District of Columbia', 68: 'Delaware', 69: 'Florida', 70: 'Georgia', 71: 'Hawaii', 72: 'Idaho', 73: 'Illinois', 74: 'Indiana', 75: 'Iowa', 76: 'Kansas', 77: 'Kentucky', 78: 'Louisiana', 79: 'Maine', 80: 'Maryland', 81: 'Massachusetts' , 82: 'Michigan', 83: 'Minnesota', 84: 'Mississippi', 85: 'Missouri', 86: 'Montana', 87: 'Nebraska', 88: 'Nevada', 89: 'New Hampshire', 90: 'New Jersey', 91: 'New Mexico', 92: 'New York', 93: 'North Carolina', 94: 'North Dakota', 95: 'Ohio', 96: 'Oklahoma', 97: 'Oregon', 98: 'Pennsylvania', 99: 'Rhode Island', 100: 'South Carolina', 101: 'South Dakota', 102: 'Tennessee', 103: 'Texas', 104: 'Utah', 105: 'Vermont', 106: 'Virginia', 107: 'Washington', 108: 'West Virginia', 109: 'Wisconsin', 110: 'Wyoming', 111: 'American Samoa', 112: 'Guam', 113: 'North Mariana Islands', 114: 'Puerto Rico', 115: 'Virgin Isalnds'}
+
+
+#for k, v in state.items():
+#db_conn.execute("""INSERT INTO "REPORTED_CASES" 
+#    ("STATE_ID","NUM_CASES","DATE_REPORTED")
+#    VALUES ( {},(SELECT SUM("{}") FROM import.times_report_confirmed WHERE "Province_State" = '{}'),'{}')""".format(k,dString,v,dString,v))
+
+result = db_conn.execute("""SELECT * FROM test."REPORTED_ACTIVE"
+ORDER BY "ACTIVE_ID" ASC """).fetchall()
+
+active_id, state_id, num_active, date_reported = result
+
+
 
 def timefix(when):
-    mm, dd, yy = (int(x) for x in when.split('/'))
-    return dt.datetime(2000+yy, mm, dd)
+    yy, mm, dd = (int(x) for x in when.split('-'))
+    return dt.datetime(yy, mm, dd)
 
 timestamp = astt.Time([timefix(x) for x in date_strings], scale='utc')
 days_elapsed = timestamp.jd - timestamp.jd.min()
@@ -99,7 +117,7 @@ state_col = "Province_State"
 #which_state = 'Louisiana'
 which_state = 'Florida'
 
-county_data = case[case[state_col] == which_state]
+#county_data = case[case[state_col] == which_state]
 
 total_per_date = county_data[date_strings].sum(axis=0)
 
@@ -376,8 +394,10 @@ plt.show()
 #fig.savefig(plot_name, bbox_inches='tight')
 
 
-
-
+##--------------------------------------------------------------------------##
+##  Close PostgreSQL database connection
+##--------------------------------------------------------------------------##
+db_conn.close()
 
 
 
