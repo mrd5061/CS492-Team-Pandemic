@@ -2,7 +2,7 @@
 # Team Pandemic
 # CS 467 - Online Capstone
 # Created: 04/30/2020
-# Modified: 05/01/2020
+# Modified: 05/25/2020
 # model.py
 
 # To use virtual environment, In Terminal use: source ~/venv/pandemic_model/bin/activate
@@ -49,8 +49,6 @@ def argnear(vec, val):
 ##--------------------------------------------------------------------------## 
 
 def infect(Istart=0.000001, Rstart=0, transm=3.2, recov=0.23, maxT=1, nsteps=10):
-	#tvals = np.linspace(0, maxT, nsteps)
-	#tstep = float(maxT) / float(nsteps)
 	Sstart = 1. - Rstart - Istart
 	tstep = 1.0 / float(nsteps)
 	niters = int(maxT*nsteps)
@@ -61,8 +59,6 @@ def infect(Istart=0.000001, Rstart=0, transm=3.2, recov=0.23, maxT=1, nsteps=10)
 	Rvals = [Rstart]
 	Svals = [Sstart]
 	Ivals = [Istart]
-	#tsirs = [(0.0, Sstart, Istart, Rstart)]
-	#for t in tvals:
 	tcurr = 0.0
 	for step in range(niters):
 		deltaS = -transm * Scurr * Icurr * tstep
@@ -77,13 +73,8 @@ def infect(Istart=0.000001, Rstart=0, transm=3.2, recov=0.23, maxT=1, nsteps=10)
 		Ivals.append(Icurr)
 		Rvals.append(Rcurr)
 		tvals.append(tcurr)
-		#tsirs.append((tcurr, Scurr, Icurr, Rcurr))
 
-		#print("At time %.3f, have S=%.3f, I=%.3f, R=%.3f | total=%.3f" % (tcurr, Scurr, Icurr, Rcurr, total))
 	return np.array(tvals), np.array(Svals), np.array(Ivals), np.array(Rvals)
-	#return np.array(tsirs)
-	#return tvals, np.array(Svals), np.array(Ivals), np.array(Rvals)
-
 
 
 
