@@ -43,8 +43,9 @@ except ImportError:
     sys.exit(1)
 
 
-
-
+##--------------------------------------------------------------------------##
+##  Finds a value within the vec np.array that is nearest to the val number.
+##--------------------------------------------------------------------------##
 
 def argnear(vec, val):
     print("RECEIVED VEC OF:  ")
