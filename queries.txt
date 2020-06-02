@@ -1,0 +1,65 @@
+1 - run the build app
+npm run dev
+2 - exit out when it finishs then run the server app
+npm start 
+or 
+forever start 
+
+====
+Changes
+====
+Shrink Chart Height from 400 to 800
+Remove mobile constraint from Wrapper.
+
+Add prod / test choice in server
+
+=================
+Query for State Data
+=================
+SELECT
+	C."COUNTRY_NAME"
+	, SOP."STATE_NAME"
+	, SOP."LATITUDE"
+	, SOP."LONGITUDE"
+	, RR."NUM_RECOVERED"
+	, RD."NUM_DEATHS"
+	, RC."NUM_CASES"
+	, RA."NUM_ACTIVE"
+	, HB."BEDS_PER_1K"
+	, HB."TOTAL_BEDS"
+FROM public."STATE_OR_PROVINCE" SOP
+	join public."COUNTRIES" C on C."COUNTRY_ID"=SOP."COUNTRY_ID"
+	join public."REPORTED_RECOVERED" RR on RR."STATE_ID"=SOP."STATE_ID"
+	join public."REPORTED_DEATHS" RD on RD."STATE_ID"=SOP."STATE_ID"
+	join public."REPORTED_CASES" RC on RC."STATE_ID"=SOP."STATE_ID"
+	join public."REPORTED_ACTIVE" RA on RA."STATE_ID"=SOP."STATE_ID"
+	join public."HOSPITAL_BEDS" HB on HB."STATE_ID"=SOP."STATE_ID"
+WHERE RR."DATE_REPORTED" = ( SELECT MAX("DATE_REPORTED") from public."REPORTED_RECOVERED" WHERE RR."STATE_ID" = "STATE_ID")
+	and  RD."DATE_REPORTED" = ( SELECT MAX("DATE_REPORTED") from public."REPORTED_DEATHS" WHERE RD."STATE_ID" = "STATE_ID")
+	and  RC."DATE_REPORTED" = ( SELECT MAX("DATE_REPORTED") from public."REPORTED_CASES" WHERE RC."STATE_ID" = "STATE_ID")
+	and  RA."DATE_REPORTED" = ( SELECT MAX("DATE_REPORTED") from public."REPORTED_ACTIVE" WHERE RA."STATE_ID" = "STATE_ID")
+order by  C."COUNTRY_NAME", SOP."STATE_NAME";
+
+
+=================
+Query for fitted:
+=================
+SELECT distinct
+C."COUNTRY_NAME"
+, SOP."STATE_NAME"
+, SOP."LATITUDE"
+, SOP."LONGITUDE"
+, FD."TRANS_RATE"
+, round(FD."DAY_1",0) as DAY1
+, round(FD."DAY_2",0) as DAY2
+, round(FD."DAY_3",0) as DAY3
+, round(FD."DAY_4",0) as DAY4
+, round(FD."DAY_5",0) as DAY5
+, round(FD."DAY_6",0) as DAY6
+, round(FD."DAY_7",0) as DAY7
+FROM public."STATE_OR_PROVINCE" SOP
+join public."FITTED_DATA" FD on FD."STATE_ID"=SOP."STATE_ID"
+join public."COUNTRIES" C on C."COUNTRY_ID"=SOP."COUNTRY_ID"
+WHERE FD."DATE_REPORTED" = ( SELECT MAX("DATE_REPORTED") from public."FITTED_DATA" WHERE FD."STATE_ID" = "STATE_ID")
+order by C."COUNTRY_NAME", SOP."STATE_NAME", FD."TRANS_RATE";
+

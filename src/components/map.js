@@ -4,7 +4,8 @@ import ReactMapGL, { Marker, Popup, NavigationControl, FullscreenControl } from 
 import CityPin from './city-pin';
 import CityInfo from './city-info';
 
-const TOKEN = 'pk.eyJ1IjoiZHZzbTEiLCJhIjoiY2s5cTRxbG90MGdwMzNmcXh5YXVtOXhodSJ9.PoNv2NgKsPOzR93-SbdXhg '; // Set your mapbox token here
+// Set your mapbox token here
+const TOKEN = 'pk.eyJ1IjoiZHZzbTEiLCJhIjoiY2s5cTRxbG90MGdwMzNmcXh5YXVtOXhodSJ9.PoNv2NgKsPOzR93-SbdXhg '; 
 
 const fullscreenControlStyle = {
   position: 'absolute',
@@ -79,8 +80,12 @@ export default class Mapp extends Component {
     return (
       <ReactMapGL
         {...viewport}
+		 //DM: Change Map Style Here.
 //		mapStyle="mapbox://styles/mapbox/streets-v11"
-		mapStyle="mapbox://styles/dvsm1/ck9sygdjq0b1c1ioe67h5q4y8"
+//		mapStyle="mapbox://styles/mapbox/dark-v10"
+		mapStyle="mapbox://styles/mapbox/light-v10"
+//		mapStyle="mapbox://styles/mapbox/outdoors-v11"
+//		mapStyle="mapbox://styles/dvsm1/ck9sygdjq0b1c1ioe67h5q4y8"
         onViewportChange={this._updateViewport}
         mapboxApiAccessToken={TOKEN} >
 

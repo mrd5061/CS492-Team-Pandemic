@@ -46,9 +46,6 @@ class BarGraph extends Component {
           labelAnchorY="text-after-edge"
         />
 		
-		
-		
-		
       </XYPlot>
     );
   }

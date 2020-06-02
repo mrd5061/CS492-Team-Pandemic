@@ -233,3 +233,53 @@ input, button, label{
     transform: rotate(360deg);
   }
 }
+
+.chartButton {
+	box-shadow: 0px 1px 0px 0px #1c1b18;
+	background:linear-gradient(to bottom, #eae0c2 5%, #ccc2a6 100%);
+	background-color:#eae0c2;
+	border-radius:15px;
+	border:2px solid #333029;
+	display:inline-block;
+	cursor:pointer;
+	color:#505739;
+	font-family:Arial;
+	font-size:12px;
+	font-weight:bold;
+	padding:7px 16px;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #ffffff;
+}
+.chartButton:hover {
+	background:linear-gradient(to bottom, #ccc2a6 5%, #eae0c2 100%);
+	background-color:#ccc2a6;
+}
+.chartButton:active {
+	position:relative;
+	top:1px;
+}
+.chartButtonDetail {
+	box-shadow:inset 0px 1px 3px 0px #91b8b3;
+	background:linear-gradient(to bottom, #768d87 5%, #6c7c7c 100%);
+	background-color:#768d87;
+	border-radius:5px;
+	border:1px solid #566963;
+	display:inline-block;
+	cursor:pointer;
+	color:#1c181c;
+	font-family:Arial;
+	font-size:12px;
+	padding:6px 9px;
+	text-decoration:none;
+	text-shadow:0px -1px 0px #2b665e;
+}
+.chartButtonDetail:hover {
+	background:linear-gradient(to bottom, #6c7c7c 5%, #768d87 100%);
+	background-color:#6c7c7c;
+}
+.chartButtonDetail:active {
+	position:relative;
+	top:1px;
+}
+
+        

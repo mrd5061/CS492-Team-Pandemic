@@ -46,16 +46,22 @@ export default class Wrapper extends Component {
     return (
       <>
         {
-		  (this.state.uploaded || this.state.useDefault) ? (
-			<App choice={this.state.uploaded ? 1 : 2} />
-		  ) : (
-			  <div className="upload-form-wrapper">
-				<div className="heading">Example splash page. Click the button below for example data on coronavirus in the United States.</div>
-				<div className="upload-form">
-				  <button style={{ backgroundColor: "#11BAEF" }} onClick={this.handleUseDefault} > Enter Site </button>
-				</div>
-			  </div>
-			)
+          this.state.isMobileView ? (
+            <div className="upload-form-wrapper">
+              <p>Please open it in bigger window.</p>
+            </div>
+          ) : (
+              (this.state.uploaded || this.state.useDefault) ? (
+                <App choice={this.state.uploaded ? 1 : 2} />
+              ) : (
+                  <div className="upload-form-wrapper">
+                    <div className="heading">Example splash page. Click the button below for example data on coronavirus in the United States.</div>
+                    <div className="upload-form">
+                      <button style={{ backgroundColor: "#11BAEF" }} onClick={this.handleUseDefault} > Enter Site </button>
+                    </div>
+                  </div>
+                )
+            )
         }
       </>
     )

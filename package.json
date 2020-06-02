@@ -1,0 +1,36 @@
+{
+  "name": "locale_ai-frontend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "parcel src/index.html",
+    "start-dev": "nodemon server/server.js",
+    "start": "node server/server.js"
+  },
+  "author": "AwesomeChap",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "convert-csv-to-json": "0.0.14",
+    "cross-blob": "^1.2.2",
+    "express": "^4.17.1",
+    "express-fileupload": "^1.1.4",
+    "node-fetch": "^2.6.0",
+    "pg": "^8.2.0",
+    "react": "^16.8.6",
+    "react-d3": "^0.4.0",
+    "react-dom": "^16.8.6",
+    "react-map-gl": "^4.1.2",
+    "react-vis": "^1.11.7",
+    "url": "^0.11.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.4.5",
+    "@babel/plugin-proposal-class-properties": "^7.4.4",
+    "babel-preset-env": "^1.7.0",
+    "cssnano": "^4.1.10",
+    "node-sass": "^4.12.0",
+    "parcel-bundler": "^1.12.4"
+  }
+}
