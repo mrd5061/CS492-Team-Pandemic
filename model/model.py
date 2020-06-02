@@ -7,18 +7,12 @@
 
 # To use virtual environment, In Terminal use: source ~/venv/pandemic_model/bin/activate
 
-# This program represents a SEIR model which represents infections as they spread through a population.
-# For reference, see: https://www.idmod.org/docs/hiv/model-seir.html#seir-model
-# In a SEIR model, individuals move through each compartment (Susceptible, Exposed, Infectious, Recovered). 
+# This program represents a SIR model which represents infections as they spread through a population.
+# For reference, see: https://www.idmod.org/docs/hiv/model-sir.html
+# In a SIR model, individuals move through each compartment (Susceptible, Infectious, Recovered). 
 # This model assumes that after a person has recovered, they cannot be reinfected.
 # This model is also not taking into account births or deaths into its calculations.
-# Where N = S+E+I+R is the total population.
-#
-# We will use the following variables in calculations:
-#	beta = infectious rate; calculating the probability of transmitting disease between an Infected to a Susceptible individual, leaving them Exposed.
-#	sigma = incubation rate; the rate of latent individuals becoming infectious (average rate of duration is 1/S)
-#	gamma = recovery rate; 1/D; is determined by the average duration, D.
-#	xi = the rate which recovered individuals return to the susceptible state due to loss of immunity.
+# Where N = S+I+R is the total population.
 
 
 from pandas import DataFrame, read_csv
