@@ -4,7 +4,7 @@
 #
 # Amanda Lawrence
 # Created: 05/08/2020
-# Modified: 05/25/2020
+# Modified: 06/01/2020
 #
 # Imports and fits data to our model
 #   

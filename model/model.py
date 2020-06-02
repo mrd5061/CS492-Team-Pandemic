@@ -2,7 +2,7 @@
 # Team Pandemic
 # CS 467 - Online Capstone
 # Created: 04/30/2020
-# Modified: 05/25/2020
+# Modified: 06/01/2020
 # model.py
 
 # To use virtual environment, In Terminal use: source ~/venv/pandemic_model/bin/activate
