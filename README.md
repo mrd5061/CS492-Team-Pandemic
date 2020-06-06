@@ -9,8 +9,7 @@ Our Website is hosted at http://mcnall.dyndns.org:3000/.
 The website features an interactive map of the United States. Each state has a centroid marker that, when clicked, will display data regarding the number of covid related deaths, active cases, total hospital beds, and hospital beds per 1k residents. The site will also display an interactive chart displaing the projection results of our model. The user will be able to view how differning levels of strictness regarding state stay at home ordinances could affect the number of future COVID cases. 
 
 ## Built With
-  * React - UI
-  * D3.js - Visualization graphics
+  * React - UI, Visualization graphics
   * Postgresql - Database system
   * AWS
       * RDS - database hosting
