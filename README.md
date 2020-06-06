@@ -3,8 +3,7 @@ This is a team based project where we will develop models and an interactive web
 
 ## Installation
 
-This project is still in development and will enventually be hosted with Github Pages. Until then, there is a version available at http://mcnall.dyndns.org:3000/. Due to the nature of development, there may be periods of time where the site is inaccessible.
-
+Our Website is hosted at http://mcnall.dyndns.org:3000/. 
 ## Usage
 
 The website features an interactive map of the United States. Each state has a centroid marker that, when clicked, will display data regarding the number of covid related deaths, active cases, total hospital beds, and hospital beds per 1k residents. The site will also display an interactive chart displaing the projection results of our model. The user will be able to view how differning levels of strictness regarding state stay at home ordinances could affect the number of future COVID cases. 
