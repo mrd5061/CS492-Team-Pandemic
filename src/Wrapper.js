@@ -50,9 +50,9 @@ export default class Wrapper extends Component {
 			<App choice={this.state.uploaded ? 1 : 2} />
 		  ) : (
 			  <div className="upload-form-wrapper">
-				<div className="heading">Example splash page. Click the button below for example data on coronavirus in the United States.</div>
+				<div className="heading">Here's our project that displays useful COVID-19 metrics using our database. It updates periodically, and has calculated metrics using models, charts, and an interactive map.</div>
 				<div className="upload-form">
-				  <button style={{ backgroundColor: "#11BAEF" }} onClick={this.handleUseDefault} > Enter Site </button>
+				  <button style={{ backgroundColor: "#11BAEF" }} onClick={this.handleUseDefault} > Click here to enter. </button>
 				</div>
 			  </div>
 			)
