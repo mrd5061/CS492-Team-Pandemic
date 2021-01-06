@@ -11,7 +11,7 @@
   "author": "AwesomeChap",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "convert-csv-to-json": "0.0.14",
     "cross-blob": "^1.2.2",
     "express": "^4.17.1",
